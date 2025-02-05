@@ -51,7 +51,7 @@ class RouteScanner
 
                     // Replace directory separator with a backslash (\)
                     $relativePath = str_replace(DIRECTORY_SEPARATOR, '\\', $relativePath);
-                    
+
                     // Capitalize each part of the path
                     $relativePath = implode('\\', array_map('ucwords', explode('\\', $relativePath)));
 
