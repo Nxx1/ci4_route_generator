@@ -1,6 +1,6 @@
 <?php
 
-namespace Akara\RouteGenerator\Utilities;
+namespace Akara\RouteGenerator;
 
 use CodeIgniter\Router\Router;
 use CodeIgniter\Router\RouteCollectionInterface;
@@ -35,51 +35,8 @@ class CustomRouter extends Router
                 }
             }
         }
+
         $this->addRoutesToFile($allRoutes);
-    }
-
-    protected function addRouteWithPattern($routeInfo)
-    {
-        // Check if 'method' key is set and is a non-empty string
-        $method = strtolower($routeInfo['method']);
-        // log_message('debug', "Processing route: Method: $method, Path: {$routeInfo['path']}, Action: {$routeInfo['action']}");
-
-        if (!in_array($method, ['get', 'post', 'put', 'delete', 'patch', 'options', 'head', ''], true)) {
-            log_message('error', "Unsupported HTTP method attempted: $method");
-            throw new \Exception("Unsupported HTTP method  $method attempted in routing.");
-        }
-
-        if (!empty($method)) {
-            $action = $routeInfo['action'];
-            $path = $routeInfo['path'] . ($routeInfo['pattern'] ?? '');
-            $filter = $routeInfo['filter'] ?? [];
-            $params = [];
-
-            // Add the route
-            // Dynamically call the method on the RouteCollection
-            preg_match_all('/\([^()]+\)/', $path, $match);
-
-            if (isset($match[0][0])) {
-                $actionArray = [$action];
-                for ($i = 1; $i <= count($match[0]); $i++) {
-                    $actionArray[] = '$' . $i;
-                }
-
-                $action = implode('/', $actionArray);
-            }
-
-            $actionexplode = explode('\\', $action);
-            $action = end($actionexplode);
-            array_pop($actionexplode);
-            $actionnamespace = implode('\\', $actionexplode);
-            // log_message('debug', "Adding route: Method: $method, Path: $path, Namespace: $actionnamespace, Action: $action");
-
-            if (count($filter) > 0) {
-                $params['filter'] = $filter;
-            }
-
-            $this->collection->$method("" . $path, "\\" . $actionnamespace . "\\" . $action, $params);
-        }
     }
 
     protected function addRoutesToFile(array $routes)
@@ -99,6 +56,7 @@ class CustomRouter extends Router
         // Prepare the new routes to add
         $newRoutes = '';
 
+
         foreach ($routes as $route) {
             $method = strtolower($route['method']);
             $path = $route['path'];
@@ -117,9 +75,7 @@ class CustomRouter extends Router
                 }
             }
 
-
-
-            // Example format for adding to Routes.php
+            // Format for adding to Routes.php
             if ($method != null) {
                 $newRoutes .= "\$routes->$method('$path',  [$className::class, '$classMethod'], ['filter' => [$filters]]);\n";
             }
@@ -138,6 +94,6 @@ class CustomRouter extends Router
         // Save the modified content back to Routes.php
         file_put_contents($routesFilePath, $routesFileContent);
 
-        log_message('info', 'Routes have been auto-added to Routes.php.');
+        log_message('info', 'Routes have been auto-added to ' . $routesFilePath);
     }
 }

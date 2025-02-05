@@ -1,6 +1,6 @@
 <?php
 
-namespace Akara\RouteGenerator\Utilities;
+namespace Akara\RouteGenerator;
 
 use CodeIgniter\Controller;
 use ReflectionClass;
@@ -27,6 +27,52 @@ class RouteScanner
         return $routes;
     }
 
+    private function getControllerClasses($namespace)
+    {
+        $controllerClasses = [];
+        $namespaceDir = $this->convertNamespaceToPath($namespace);
+
+        // Check if the namespace directory exists
+        if (is_dir($namespaceDir)) {
+            log_message('debug', "Namespace directory: $namespaceDir");
+
+            // Recursive directory iterator to scan all subdirectories
+            $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($namespaceDir));
+
+            foreach ($iterator as $fileInfo) {
+                if ($fileInfo->isFile() && $fileInfo->getExtension() === 'php') {
+
+                    $fullPath = $fileInfo->getPathname();
+                    log_message('debug', "File Path: " . $fullPath);
+
+                    // Convert the full path to a namespace
+                    $relativePath = str_replace(ROOTPATH, '', $fullPath);
+                    $relativePath = trim($relativePath, DIRECTORY_SEPARATOR);
+
+                    // Replace directory separator with a backslash (\)
+                    $relativePath = str_replace(DIRECTORY_SEPARATOR, '\\', $relativePath);
+                    
+                    // Capitalize each part of the path
+                    $relativePath = implode('\\', array_map('ucwords', explode('\\', $relativePath)));
+
+                    // Remove the file extension for class name
+                    $className = str_replace('.php', '', $relativePath);
+
+                    // Ensure the class exists and is a valid controller
+                    if (class_exists($className)) {
+                        $reflectionClass = new ReflectionClass($className);
+                        if ($reflectionClass->isSubclassOf(Controller::class) && !$reflectionClass->isAbstract()) {
+                            $controllerClasses[] = $className;
+                            log_message('debug', "Class Name: " . $className);
+                        }
+                    }
+                }
+            }
+        }
+
+        return $controllerClasses;
+    }
+
     private function processAttributes($method): array
     {
         $routeInfo = ['method' => '', 'path' => '', 'action' => '', 'filter' => []];
@@ -46,48 +92,6 @@ class RouteScanner
         $routeInfo['class']['method'] = $method->getName();
         return $routeInfo;
     }
-    private function getControllerClasses($namespace)
-    {
-        $controllerClasses = [];
-        // $namespaceDir = "App\Controllers";
-        $namespaceDir = $this->convertNamespaceToPath($namespace);
-        log_message('debug', "Namespace directory: $namespaceDir");
-
-        // Check if the namespace directory exists
-        if (is_dir($namespaceDir)) {
-            // Recursive directory iterator to scan all subdirectories
-            $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($namespaceDir));
-
-            foreach ($iterator as $fileInfo) {
-                if ($fileInfo->isFile() && $fileInfo->getExtension() === 'php') {
-                    $fullPath = $fileInfo->getPathname();
-                    log_message('debug', "File Path: " . $fullPath);
-
-                    // Convert the full path to a namespace
-                    $relativePath = str_replace(ROOTPATH, '', $fullPath);
-                    $relativePath = trim($relativePath, DIRECTORY_SEPARATOR);
-                    $relativePath = str_replace(DIRECTORY_SEPARATOR, '\\', $relativePath);
-                    $className = str_replace('.php', '', $relativePath);
-                    $className = str_replace('app', 'App', $className);
-
-                    log_message('debug', "Full path: " . $fullPath);
-
-                    // Ensure the class exists and is a valid controller
-                    if (class_exists($className)) {
-                        $reflectionClass = new ReflectionClass($className);
-                        if ($reflectionClass->isSubclassOf(Controller::class) && !$reflectionClass->isAbstract()) {
-                            $controllerClasses[] = $className;
-                            log_message('debug', "Class Name: " . $className);
-                        }
-                    }
-                }
-            }
-        } else {
-            log_message('error', "Directory not found: $namespaceDir");
-        }
-        return $controllerClasses;
-    }
-
 
     private function convertNamespaceToPath($namespace)
     {

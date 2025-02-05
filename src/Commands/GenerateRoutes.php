@@ -1,8 +1,8 @@
 <?php
 
-namespace Akara\RouteGenerator\Command;
+namespace Akara\RouteGenerator\Commands;
 
-use Akara\RouteGenerator\Utilities\CustomRouter;
+use Akara\RouteGenerator\CustomRouter;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use Config\Services;
@@ -10,7 +10,7 @@ use Config\Services;
 class GenerateRoutes extends BaseCommand
 {
     protected $group       = 'Generators';
-    protected $name        = 'make:routes';
+    protected $name        = 'make:route';
     protected $description = 'Run route generation';
 
     public function run(array $params)
@@ -29,7 +29,6 @@ class GenerateRoutes extends BaseCommand
         $routes = Services::routes();
         $customRouter = new CustomRouter($routes, Services::request(), $namespaces);
         $customRouter->initialize();
-        Services::injectMock('router', $customRouter);
 
         CLI::write('Generate routes complete!');
     }

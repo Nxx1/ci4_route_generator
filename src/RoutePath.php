@@ -1,6 +1,6 @@
 <?php
 
-namespace Akara\RouteGenerator\Utilities;
+namespace Akara\RouteGenerator;
 
 #[\Attribute]
 class RoutePath

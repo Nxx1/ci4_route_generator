@@ -1,7 +1,7 @@
 {
-    "name": "akara/codeigniter_route_generator",
+    "name": "akara/ci4_route_generator",
     "description": "Codeigniter 4 Route Generator",
-    "version": "1.0.0",
+    "version": "1.0.3",
     "license": "MIT",
     "type": "library",
     "keywords": [
@@ -32,7 +32,7 @@
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
-            "Akara\\RouteGenerator\\": "src/"
+            "Akara\\RouteGenerator\\": "src"
         }
     },
     "autoload-dev": {
