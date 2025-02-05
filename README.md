@@ -7,7 +7,7 @@ The **Codeigniter 4 Route Generator** is a PHP package designed to automate the 
 To install the package via Composer, run the following command:
 
 ```bash
-composer require akara/route-generator
+composer require akara/ci4-route-generator
 ```
 
 ## Usage
