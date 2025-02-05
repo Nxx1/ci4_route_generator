@@ -28,8 +28,6 @@
         "phpunit/phpunit": "^11.5",
         "rector/rector": "^2.0"
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "Akara\\RouteGenerator\\": "src"
