@@ -164,7 +164,3 @@ Contributions are welcome! Please open an issue or submit a pull request on the 
 ## License
 
 This package is open-source software licensed under the [MIT License](https://opensource.org/licenses/MIT).
-
----
-
-This documentation provides a comprehensive guide to using the Akara Route Generator package. For further assistance, feel free to reach out or consult the source code directly.
